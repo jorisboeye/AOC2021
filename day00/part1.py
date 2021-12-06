@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from aocd import submit
+
 
 def parse_input(file):
     return [int(line) for line in file.read().splitlines()]
