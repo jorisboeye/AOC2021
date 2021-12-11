@@ -2,16 +2,27 @@ from pathlib import Path
 
 from aocd import submit
 
+FILE = Path(__file__)
+PART = "a" if FILE.stem == "part1" else "b"
+DAY = int(FILE.parent.stem[-2:])
+TEST_RESULT = 0
+
 
 def parse_input(file):
-    return [int(line) for line in file.read().splitlines()]
+    with open(Path(__file__).parent / file, "r") as f:
+        numbers = [int(line) for line in f.read().splitlines()]
+    return numbers
 
 
 def solve(file: str = "input.txt"):
-    with open(Path(__file__).parent / file, "r") as f:
-        numbers = parse_input(f)
+    numbers = parse_input(file)
     return numbers
 
 
 if __name__ == "__main__":
-    print(solve("test_input.txt"))
+    test_solution = solve("test_input.txt")
+    print(test_solution)
+    if test_solution == TEST_RESULT:
+        solution = solve()
+        print(solution)
+        submit(solution, part=PART, day=DAY)
