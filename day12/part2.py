@@ -46,12 +46,8 @@ def get_pathfinder(connections: Dict[str, Set[str]]):
 
 
 def solve(file: str = "input.txt"):
-    connections = get_connections(parse_input(file))
-    pathfinder = get_pathfinder(connections)
-    paths = set()
-    for path in pathfinder("end", ("end",)):
-        paths.add(path)
-    return len(paths)
+    pathfinder = get_pathfinder(get_connections(parse_input(file)))
+    return len(set(pathfinder("end", ("end",))))
 
 
 if __name__ == "__main__":
