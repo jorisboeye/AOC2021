@@ -6,6 +6,7 @@ FILE = Path(__file__)
 PART = "a" if FILE.stem == "part1" else "b"
 DAY = int(FILE.parent.stem[-2:])
 TEST_RESULT = 0
+SOLVED = False
 
 
 def parse_input(file):
@@ -25,4 +26,5 @@ if __name__ == "__main__":
     if test_solution == TEST_RESULT:
         solution = solve()
         print(solution)
-        submit(solution, part=PART, day=DAY)
+        if not SOLVED:
+            submit(solution, part=PART, day=DAY)
