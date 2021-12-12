@@ -50,8 +50,7 @@ def solve(file: str = "input.txt"):
     pathfinder = get_pathfinder(connections)
     paths = set()
     for path in pathfinder("end", ("end",)):
-        if path:
-            paths.add(path)
+        paths.add(path)
     return len(paths)
 
 
