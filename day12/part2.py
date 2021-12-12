@@ -1,5 +1,6 @@
 from collections import defaultdict
 from pathlib import Path
+from typing import Dict, Set, Tuple
 
 from aocd import submit
 
@@ -7,7 +8,8 @@ FILE = Path(__file__)
 PART = "a" if FILE.stem == "part1" else "b"
 DAY = int(FILE.parent.stem[-2:])
 TEST_RESULT = 36
-SOLVED = False
+SOLVED = True
+SOLUTION = 98796
 
 
 def parse_input(file):
@@ -24,22 +26,21 @@ def get_connections(lines):
     return connections
 
 
-def validate_connection(connection, path):
-    if connection.isupper():
-        return True
-    elif connection != "end":
+def validate_connection(connection: str, path: Tuple[str, ...]) -> bool:
+    if connection != "end":
         lc = [c for c in path if c.islower()]
         return len(lc) - len(set(lc)) <= 1
+    else:
+        return False
 
 
-def get_pathfinder(connections):
-    def pathfinder(node, path):
+def get_pathfinder(connections: Dict[str, Set[str]]):
+    def pathfinder(node: str, path: Tuple[str, ...]):
         for connection in connections[node]:
-            con_path = [n for n in path]
             if connection == "start":
-                yield con_path + ["start"]
-            elif validate_connection(connection, con_path + [connection]):
-                yield from pathfinder(connection, con_path + [connection])
+                yield path + ("start",)
+            elif validate_connection(connection, path + (connection,)):
+                yield from pathfinder(connection, path + (connection,))
 
     return pathfinder
 
@@ -48,9 +49,9 @@ def solve(file: str = "input.txt"):
     connections = get_connections(parse_input(file))
     pathfinder = get_pathfinder(connections)
     paths = set()
-    for path in pathfinder("end", ["end"]):
+    for path in pathfinder("end", ("end",)):
         if path:
-            paths.add(tuple(path))
+            paths.add(path)
     return len(paths)
 
 
@@ -60,5 +61,6 @@ if __name__ == "__main__":
     if test_solution == TEST_RESULT:
         solution = solve()
         print(solution)
+        print(solution == SOLUTION)
         if not SOLVED:
             submit(solution, part=PART, day=DAY)
