@@ -1,30 +1,22 @@
 from pathlib import Path
+from typing import Union
 
-from aocd import submit
+from aoc.parsers import parse_lines, read
+from aoc.submit import submit
 
 FILE = Path(__file__)
-PART = "a" if FILE.stem == "part1" else "b"
-DAY = int(FILE.parent.stem[-2:])
 TEST_RESULT = 0
-SOLVED = False
 
 
-def parse_input(file):
-    with open(Path(__file__).parent / file, "r") as f:
-        numbers = [int(line) for line in f.read().splitlines()]
-    return numbers
-
-
-def solve(file: str = "input.txt"):
-    numbers = parse_input(file)
-    return numbers
+def solve(puzzle_input: Union[str, Path]) -> int:
+    numbers = tuple(parse_lines(text=read(puzzle_input), target=int))
+    return len(numbers)
 
 
 if __name__ == "__main__":
-    test_solution = solve("test_input.txt")
-    print(test_solution)
-    if test_solution == TEST_RESULT:
-        solution = solve()
-        print(solution)
-        if not SOLVED:
-            submit(solution, part=PART, day=DAY)
+    test_answer = solve(puzzle_input=FILE.parent / "test_input.txt")
+    print(test_answer)
+    if test_answer == TEST_RESULT:
+        answer = solve(puzzle_input=FILE.parent / "input.txt")
+        print(answer)
+        submit(answer=answer, file=FILE)
