@@ -27,7 +27,7 @@ def test(test_input: str, expected: int) -> None:
 
 
 if __name__ == "__main__":
-    test_answer = solve(puzzle_input=FILE.parent / "test_input.txt")
+    test_answer = solve(puzzle_input=TEST_INPUT)
     print(test_answer)
     if test_answer == TEST_RESULT:
         answer = solve(puzzle_input=FILE.parent / "input.txt")
