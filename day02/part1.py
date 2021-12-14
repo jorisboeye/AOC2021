@@ -1,7 +1,21 @@
 from pathlib import Path
-from typing import NamedTuple
+from typing import NamedTuple, Union
 
-from aocd import submit
+import pytest
+
+from aoc.parsers import parse_lines, read, split_mapping
+from aoc.submit import submit
+
+FILE = Path(__file__)
+TEST_RESULT = 150
+TEST_INPUT = """\
+forward 5
+down 5
+forward 8
+up 3
+down 8
+forward 2
+"""
 
 
 class Position(NamedTuple):
@@ -9,38 +23,42 @@ class Position(NamedTuple):
     vertical: int
 
     @property
-    def result(self):
+    def result(self) -> int:
         return self.horizontal * self.vertical
 
+    def move(self, direction: str, delta: str) -> "Position":
+        if direction == "forward":
+            delta_x = int(delta)
+            delta_y = 0
+        else:
+            delta_x = 0
+            delta_y = int(delta) if direction == "down" else -int(delta)
 
-def move(position, direction, delta):
-    if direction == "forward":
         return Position(
-            horizontal=position.horizontal + int(delta), vertical=position.vertical
-        )
-    elif direction == "down":
-        return Position(
-            horizontal=position.horizontal, vertical=position.vertical + int(delta)
-        )
-    else:
-        return Position(
-            horizontal=position.horizontal, vertical=position.vertical - int(delta)
+            horizontal=self.horizontal + delta_x, vertical=self.vertical + delta_y
         )
 
 
-def parse_input(file):
-    return [line.split() for line in file.read().splitlines()]
-
-
-def solve(file: str = "input.txt"):
-    with open(Path(__file__).parent / file, "r") as f:
-        instructions = parse_input(f)
+def solve(puzzle_input: Union[str, Path]) -> int:
+    instructions = parse_lines(read(puzzle_input), split_mapping(" "))
     position = Position(0, 0)
     for instruction in instructions:
-        position = move(position, *instruction)
+        position = position.move(*instruction)
     return position.result
 
 
+@pytest.mark.parametrize(
+    ("test_input", "expected"),
+    ((TEST_INPUT, TEST_RESULT),),
+)
+def test(test_input: str, expected: int) -> None:
+    assert solve(test_input) == expected
+
+
 if __name__ == "__main__":
-    print(solve())
-    submit(solve(), part="a", day=2)
+    test_answer = solve(TEST_INPUT)
+    if test_answer == TEST_RESULT:
+        answer = solve(FILE.parent / "input.txt")
+        submit(answer=answer, file=FILE)
+    else:
+        print(test_answer)
