@@ -18,7 +18,7 @@ def parse_input(file):
     return lines
 
 
-def get_connections(lines):
+def connections(lines):
     connections = defaultdict(set)
     for line in lines:
         connections[line[1]].add(line[0])
@@ -26,32 +26,20 @@ def get_connections(lines):
     return connections
 
 
-def validate_connection(connection: str, path: Tuple[str, ...]) -> bool:
-    if connection != "end":
-        lc = [c for c in path if c.islower()]
-        return len(lc) - len(set(lc)) <= 1
-    else:
-        return False
-
-
-def get_pathfinder(connections: Dict[str, Set[str]]):
-    def pathfinder(node: str, path: Tuple[str, ...]):
-        for connection in connections[node]:
-            if connection == "start":
-                yield path + ("start",)
-            elif validate_connection(connection, path + (connection,)):
-                yield from pathfinder(connection, path + (connection,))
-
-    return pathfinder
+def pathfinder(connections: Dict[str, Set[str]], node: str, path: Tuple[str, ...]):
+    for connection in connections[node]:
+        new_path = path + (connection,)
+        if connection == "start":
+            yield new_path
+        elif (
+            connection != "end"
+            and len(lc := [c for c in new_path if c.islower()]) - len(set(lc)) <= 1
+        ):
+            yield from pathfinder(connections, connection, new_path)
 
 
 def solve(file: str = "input.txt"):
-    connections = get_connections(parse_input(file))
-    pathfinder = get_pathfinder(connections)
-    paths = set()
-    for path in pathfinder("end", ("end",)):
-        paths.add(path)
-    return len(paths)
+    return len(set(pathfinder(connections(parse_input(file)), "end", ("end",))))
 
 
 if __name__ == "__main__":

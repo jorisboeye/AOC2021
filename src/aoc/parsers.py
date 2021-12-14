@@ -27,3 +27,10 @@ def parse_lines(text: str, function: Callable[[str], Any]) -> Iterable[Any]:
 
 def tuple_of_ints(text: str) -> Tuple[int, ...]:
     return tuple(int(number) for number in text.strip().split(","))
+
+
+def split_mapping(split: str) -> Callable[[str], Tuple[str, str]]:
+    def splitter(text: str) -> Tuple[str, str]:
+        return text.strip().split(split)
+
+    return splitter
