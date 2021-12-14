@@ -3,9 +3,12 @@ name = "aoc2021"
 version = "0.1.0"
 description = ""
 authors = ["Joris Boeye <joris.boeye@gmail.com>"]
+packages = [
+    { include = "aoc", from = "src" },
+]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 advent-of-code-data = "^1.1.1"
 attrs = "^21.2.0"
 

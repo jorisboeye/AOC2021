@@ -9,7 +9,7 @@ FILE = Path(__file__)
 PART = "a" if FILE.stem == "part1" else "b"
 DAY = int(FILE.parent.stem[-2:])
 TEST_RESULT = 195
-SOLVED = TRUE
+SOLVED = True
 
 
 def parse_input(file):
