@@ -34,3 +34,23 @@ def split_mapping(split: str) -> Callable[[str], List[str]]:
         return text.strip().split(split)
 
     return splitter
+
+
+def array_generator(
+    text: str,
+    target: Callable[[str], Any],
+    line_splitter: Callable[[str], Iterable[str]],
+) -> Iterable[Any]:
+    for line in text.strip().splitlines():
+        for number in line_splitter(line):
+            yield (target(number))
+
+
+def parse_array(
+    text: str,
+    target: Callable[[str], Any],
+    line_splitter: Callable[[str], Iterable[str]] = lambda x: x,
+) -> Tuple[Tuple[int, ...], int]:
+    return tuple(
+        array_generator(text=text, target=target, line_splitter=line_splitter)
+    ), len(text.strip().splitlines()[0])
