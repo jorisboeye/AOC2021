@@ -1,8 +1,26 @@
 from collections import defaultdict
 from pathlib import Path
-from typing import NamedTuple
+from typing import Iterable, NamedTuple, Union
 
-from aocd import submit
+import pytest
+
+from aoc.parsers import parse_lines, read
+from aoc.submit import submit
+
+FILE = Path(__file__)
+TEST_RESULT = 12
+TEST_INPUT = """\
+0,9 -> 5,9
+8,0 -> 0,8
+9,4 -> 3,4
+2,2 -> 2,1
+7,0 -> 7,4
+6,4 -> 2,0
+0,9 -> 2,9
+3,4 -> 1,4
+0,0 -> 8,8
+5,5 -> 8,2
+"""
 
 
 class Point(NamedTuple):
@@ -10,10 +28,10 @@ class Point(NamedTuple):
     y: int
 
     @classmethod
-    def from_input(cls, text):
+    def from_input(cls, text: str) -> "Point":
         return cls(*tuple(int(c) for c in text.split(",")))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.x},{self.y}"
 
 
@@ -22,19 +40,19 @@ class Line(NamedTuple):
     end: Point
 
     @classmethod
-    def from_input(cls, text):
-        return cls(*tuple(map(Point.from_input, text.split(" -> "))))
+    def from_input(cls, text: str) -> "Line":
+        return cls(*tuple(map(Point.from_input, text.strip().split(" -> "))))
 
     @property
-    def is_vertical(self):
+    def is_vertical(self) -> bool:
         return self.start.x == self.end.x
 
     @property
-    def is_horizontal(self):
+    def is_horizontal(self) -> bool:
         return self.start.y == self.end.y
 
     @property
-    def points(self):
+    def points(self) -> Iterable[Point]:
         if self.is_vertical:
             step = int((self.end.y - self.start.y) / abs(self.end.y - self.start.y))
             for y in range(self.start.y, self.end.y + step, step):
@@ -51,25 +69,31 @@ class Line(NamedTuple):
             for x, y in zip(x_range, y_range):
                 yield Point(x, y)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.start}->{self.end}"
 
 
-def parse_input(file):
-    return [Line.from_input(line) for line in file.read().splitlines()]
-
-
-def solve(file: str = "input.txt"):
-    with open(Path(__file__).parent / file, "r") as f:
-        lines = parse_input(f)
+def solve(puzzle_input: Union[str, Path]) -> int:
+    lines = tuple(parse_lines(text=read(puzzle_input), target=Line.from_input))
     points = defaultdict(list)
     for line in lines:
         for point in line.points:
             points[point].append(line)
-    return sum([1 for point in points if len(points[point]) > 1])
+    return sum([len(points[point]) > 1 for point in points])
+
+
+@pytest.mark.parametrize(
+    ("test_input", "expected"),
+    ((TEST_INPUT, TEST_RESULT),),
+)
+def test(test_input: str, expected: int) -> None:
+    assert solve(test_input) == expected
 
 
 if __name__ == "__main__":
-    print(solve("test_input.txt"))
-    if solve("test_input.txt") == 12:
-        print(solve())  # , part="a", day=5)
+    test_answer = solve(puzzle_input=TEST_INPUT)
+    print(test_answer)
+    if test_answer == TEST_RESULT:
+        answer = solve(puzzle_input=FILE.parent / "input.txt")
+        print(answer)
+        submit(answer=answer, file=FILE)

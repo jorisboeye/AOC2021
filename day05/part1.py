@@ -74,7 +74,7 @@ def solve(puzzle_input: Union[str, Path]) -> int:
     for line in lines:
         for point in line.points:
             points[point].append(line)
-    return sum([1 for point in points if len(points[point]) > 1])
+    return sum([len(points[point]) > 1 for point in points])
 
 
 @pytest.mark.parametrize(
