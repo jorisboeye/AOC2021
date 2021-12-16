@@ -17,28 +17,9 @@ TEST_INPUTS = (
     ("A0016C880162017C3686B18A3D4780", 31),
 )
 
-MAPPING = {
-    "0": "0000",
-    "1": "0001",
-    "2": "0010",
-    "3": "0011",
-    "4": "0100",
-    "5": "0101",
-    "6": "0110",
-    "7": "0111",
-    "8": "1000",
-    "9": "1001",
-    "A": "1010",
-    "B": "1011",
-    "C": "1100",
-    "D": "1101",
-    "E": "1110",
-    "F": "1111",
-}
-
 
 def hex_to_bits(text: str) -> str:
-    return "".join((MAPPING[h] for h in text))
+    return "".join((f"{int(h, 16):04b}" for h in text))
 
 
 def parse_section(bits: str, length: int) -> Tuple[int, str]:
