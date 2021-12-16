@@ -55,8 +55,10 @@ def parse_value(bits: str) -> Tuple[int, str]:
     return int(value, 2), bits[end_of_value:]
 
 
-def parse(bits: str, versions: List[int]) -> Tuple[str, List[int]]:
-    while bits and int(bits):
+def parse(
+    bits: str, versions: List[int], values_limit: int = 0
+) -> Tuple[str, List[int]]:
+    while bits and int(bits) and not (values_limit and len(versions) >= values_limit):
         version, bits = parse_section(bits, length=3)
         versions.append(version)
         packet_type, bits = parse_section(bits, length=3)
@@ -66,10 +68,9 @@ def parse(bits: str, versions: List[int]) -> Tuple[str, List[int]]:
             length_type_id, bits = parse_section(bits, length=1)
             if length_type_id:
                 number_of_subpackages, bits = parse_section(bits, length=11)
-                counter = 0
-                while counter < number_of_subpackages:
-                    counter += 1
-                    bits, versions = parse(bits, versions)
+                bits, versions = parse(
+                    bits, versions, values_limit=number_of_subpackages
+                )
             else:
                 length, bits = parse_section(bits, length=15)
                 _, versions = parse(bits[:length], versions)
